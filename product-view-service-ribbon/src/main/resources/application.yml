@@ -1,0 +1,16 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  application:
+    name: product-view-service-ribbon
+    # product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML5
+    servlet:
+      content-type: text/html
