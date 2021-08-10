@@ -90,6 +90,7 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
 2. 然后启动两次服务 ProductDataServiceApplication， 分别输入 8001和8002.
 3. 然后运行Ribbon ProductViewServiceRibbonApplication 以启动 微服务，然后访问地址：
    http://127.0.0.1:8010/products
+   
    或者运行Feign  ProductViewServiceFeignApplication 已启动 微服务，访问
    http://127.0.0.1:8012/products
 ---

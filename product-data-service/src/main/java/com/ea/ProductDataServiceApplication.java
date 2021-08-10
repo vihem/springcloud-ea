@@ -18,10 +18,11 @@ import java.util.concurrent.TimeoutException;
 @EnableEurekaClient
 public class ProductDataServiceApplication {
     public static void main( String[] args ) {
-        int port=0;
-        int defaultPort = 8001;
+        int port;   //最后使用的端口号
+        int defaultPort = 8001; //默认端口号
+        //异步执行 输入端口号，ThreadUtil 是 hutool的工具
         Future<Integer> future = ThreadUtil.execAsync(()->{
-            int p=0;
+            int res;
             System.out.println("请于5秒钟内输入端口号, 推荐  8001 、 8002  或者  8003，超过5秒将默认使用 " + defaultPort);
             Scanner sc = new Scanner(System.in);
             while (true){
@@ -30,16 +31,17 @@ public class ProductDataServiceApplication {
                     System.err.println("只能是数字");
 //                    continue;
                 } else {
-                    p = Convert.toInt(strPort);
+                    res = Convert.toInt(strPort);
                     sc.close();
                     break;
                 }
             }
-            return p;
+            return res;
         });
         try {
             port = future.get(5, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            //如果5秒不输入，那么就默认使用 8001端口
             port = defaultPort;
         }
         if(!NetUtil.isUsableLocalPort(port)){
