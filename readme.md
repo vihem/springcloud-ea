@@ -85,13 +85,39 @@ public interface ProductClientFeign {
 4. 配置文件
 
 product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
+
+### 四 zipkin 服务链路
+
+1. 什么是服务链路
+
+   我们有两个微服务，分别是数据服务和视图服务，随着业务的增加，就会有越来越多的微服务存在，他们之间也会有更加复杂的调用关系。
+   这个调用关系，仅仅通过观察代码，会越来越难以识别，所以就需要通过 zipkin 服务链路追踪服务器 这个东西来用图片进行识别了。
+   
+2. 这里使用 zipkin-server-2.10.1-exec.jar
+
+   1. 启动命令 java -jar zipkin-server-2.10.1-exec.jar(地址栏就可输入)/在idea直接右键run
+   2. 启动所有需要的服务系统
+   3. 执行一次 http://127.0.0.1:8012/products
+   4. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
+   
+3. 改造：product-data-service和product-view-service-xxx
+   
+   1. 都增加pom依赖 spring-cloud-starter-zipkin
+   2. 启动类都配置 Sampler 抽样策略： ALWAYS_SAMPLE 表示持续抽样
+      ```
+      @Bean
+      public Sampler defaultSampler(){ return Sampler.ALWAYS_SAMPLE;}
+      ```
+   3. 配置文件都增加： spring.zipkin.base-url: http://localhost:9411
+
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
 2. 然后启动两次服务 ProductDataServiceApplication， 分别输入 8001和8002.
 3. 然后运行Ribbon ProductViewServiceRibbonApplication 以启动 微服务，然后访问地址：
    http://127.0.0.1:8010/products
-   
+
    或者运行Feign  ProductViewServiceFeignApplication 已启动 微服务，访问
    http://127.0.0.1:8012/products
+4. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
+5. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
 ---
-
