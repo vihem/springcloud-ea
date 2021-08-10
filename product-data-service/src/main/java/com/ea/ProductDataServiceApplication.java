@@ -20,7 +20,12 @@ public class ProductDataServiceApplication {
     public static void main( String[] args ) {
         int port;   //最后使用的端口号
         int defaultPort = 8001; //默认端口号
-        //异步执行 输入端口号，ThreadUtil 是 hutool的工具
+        /*
+            异步执行 输入端口号
+            Future代表一个异步执行的操作，通过get()方法可以获得操作的结果，如果异步操作还没有完成，则，get()会使当前线程阻塞
+            ThreadUtil 是 hutool的工具
+            ThreadUtil.execAsync 执行有返回值的异步方法
+         */
         Future<Integer> future = ThreadUtil.execAsync(()->{
             int res;
             System.out.println("请于5秒钟内输入端口号, 推荐  8001 、 8002  或者  8003，超过5秒将默认使用 " + defaultPort);
