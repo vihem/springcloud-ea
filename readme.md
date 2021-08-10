@@ -93,7 +93,7 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
    我们有两个微服务，分别是数据服务和视图服务，随着业务的增加，就会有越来越多的微服务存在，他们之间也会有更加复杂的调用关系。
    这个调用关系，仅仅通过观察代码，会越来越难以识别，所以就需要通过 zipkin 服务链路追踪服务器 这个东西来用图片进行识别了。
    
-2. 这里使用 zipkin-server-2.10.1-exec.jar
+2. 这里使用 zipkin-server-2.10.1-exec.jar（zipkin目录下）
 
    1. 启动命令 java -jar zipkin-server-2.10.1-exec.jar(地址栏就可输入)/在idea直接右键run
    2. 启动所有需要的服务系统
