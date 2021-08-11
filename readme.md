@@ -110,14 +110,28 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
       ```
    3. 配置文件都增加： spring.zipkin.base-url: http://localhost:9411
 
+### 配置服务
+
+有时候，微服务要做集群，这就意味着，会有多个微服务实例。
+在业务上有时候需要修改一些配置信息，比如说 版本信息吧~ 倘若没有配置服务， 那么就需要挨个修改微服务，挨个重新部署微服务，这样就比较麻烦。
+为了偷懒， 这些配置信息就会放在一个公共的地方，比如git, 然后通过配置服务器把它获取下来，然后微服务再从配置服务器上取下来。
+这样只要修改git上的信息，那么同一个集群里的所有微服务都立即获取相应信息了，这样就大大节约了开发，上线和重新部署的时间了。
+
+见图（repos/ConfigServer.png）
+我们先在 git 里保存 version 信息， 然后通过 ConfigServer 去获取 version 信息， 接着不同的视图微服务实例再去 ConfigServer 里获取 version.
+
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
-2. 然后启动两次服务 ProductDataServiceApplication， 分别输入 8001和8002.
-3. 然后运行Ribbon ProductViewServiceRibbonApplication 以启动 微服务，然后访问地址：
+2. 启动ConfigServerApplication，访问 http://localhost:8030/version/dev
+   ```
+   {"name":"version","profiles":["dev"],"label":null,"version":"5046c9520e739312615997563357740456cc5756","state":null,"propertySources":[]}
+   ```
+3. 然后启动两次服务 ProductDataServiceApplication， 分别输入 8001和8002.
+4. 然后运行Ribbon ProductViewServiceRibbonApplication 以启动 微服务，然后访问地址：
    http://127.0.0.1:8010/products
 
    或者运行Feign  ProductViewServiceFeignApplication 已启动 微服务，访问
    http://127.0.0.1:8012/products
-4. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
-5. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
+5. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
+6. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
 ---

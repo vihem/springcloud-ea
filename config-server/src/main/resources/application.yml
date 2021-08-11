@@ -1,0 +1,18 @@
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: git
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/vihem/springcloud-ea
+#          uri:git repository address, no '/' at the back, because err: No custom http config found for URL: XXX
+          search-paths: respo
+          default-label: master
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
