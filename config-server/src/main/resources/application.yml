@@ -8,8 +8,9 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/vihem/springcloud-ea
+          uri: https://gitee.com/vihem/springcloud-ea
 #          uri:git repository address, no '/' at the back, because err: No custom http config found for URL: XXX
+#          https://gitee.com/vihem/springcloud-ea https://github:com/vihem/springcloud-ea
           search-paths: respo
           default-label: master
 eureka:

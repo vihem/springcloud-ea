@@ -110,16 +110,21 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
       ```
    3. 配置文件都增加： spring.zipkin.base-url: http://localhost:9411
 
-### 配置服务
+### config-server 配置服务
 
 有时候，微服务要做集群，这就意味着，会有多个微服务实例。
-在业务上有时候需要修改一些配置信息，比如说 版本信息吧~ 倘若没有配置服务， 那么就需要挨个修改微服务，挨个重新部署微服务，这样就比较麻烦。
-为了偷懒， 这些配置信息就会放在一个公共的地方，比如git, 然后通过配置服务器把它获取下来，然后微服务再从配置服务器上取下来。
+在业务上有时候需要修改一些配置信息，比如说 版本信息吧~ 
+倘若没有配置服务，那么就需要挨个修改微服务，挨个重新部署微服务，这样就比较麻烦。
+为了偷懒，这些配置信息就会放在一个公共的地方，比如git, 然后通过配置服务器把它获取下来，然后微服务再从配置服务器上取下来。
 这样只要修改git上的信息，那么同一个集群里的所有微服务都立即获取相应信息了，这样就大大节约了开发，上线和重新部署的时间了。
 
 见图（repos/ConfigServer.png）
-我们先在 git 里保存 version 信息， 然后通过 ConfigServer 去获取 version 信息， 接着不同的视图微服务实例再去 ConfigServer 里获取 version.
+我们先在 git 里保存 version 信息，然后通过 ConfigServer 去获取 version 信息，接着不同的视图微服务实例再去 ConfigServer 里获取 version.
 
+https://github.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties \
+https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties
+
+启动类加 @EnableConfigServer 这个注解表示本springboot 是个配置服务器。
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
 2. 启动ConfigServerApplication，访问 http://localhost:8030/version/dev
