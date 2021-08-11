@@ -98,7 +98,7 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
    1. 启动命令 java -jar zipkin-server-2.10.1-exec.jar(地址栏就可输入)/在idea直接右键run
    2. 启动所有需要的服务系统
    3. 执行一次 http://127.0.0.1:8012/products
-   4. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
+   4. 访问链路追踪服务器 [http://localhost:9411/zipkin/dependency/][] 就可以看到 视图微服务调用数据微服务 的图形
    
 3. 改造：product-data-service和product-view-service-xxx
    
@@ -148,6 +148,8 @@ https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-fe
 ### 七 消息总线 RabbitMQ
 
 RabbitMQ 即一个消息队列，主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用。
+
+版本号： RabbitMQ Server 3.6.5 浏览器链接： http://127.0.0.1:15672/#/
 1. 客户端 feign 添加依赖
    1. 多了spring-boot-starter-actuator 用于访问路径：/actuator/bus-refresh
    2. 多了spring-cloud-starter-bus-amqp 用于支持 rabbitmq
@@ -182,14 +184,21 @@ management:
 4. 启动类新增 RabbitMQ 端口检测
 5. 新增一个类 utils/FreshConfigUtil.java
 
-使用 post 的方式访问 http://localhost:8012/actuator/bus-refresh 地址，
-之所以要专门做一个 FreshConfigUtil 类，就是为了可以使用 post 访问，因为它不支持 get 方式访问，直接把这个地址放在浏览器里，是会抛出 405错误的。\
-这个地址的作用就是让 config-server 去 git 获取最新的配置信息，并把此信息广播给集群里的两个 视图微服务。
+   使用 post 的方式访问 http://localhost:8012/actuator/bus-refresh 地址，
+   之所以要专门做一个 FreshConfigUtil 类，就是为了可以使用 post 访问，因为它不支持 get 方式访问，直接把这个地址放在浏览器里，是会抛出 405错误的。\
+   这个地址的作用就是让 config-server 去 git 获取最新的配置信息，并把此信息广播给集群里的两个 视图微服务。
 
 6. 视图服务进行了改造，支持了 rabbitMQ, 那么在默认情况下，它的信息就不会进入 Zipkin了。 在Zipkin 里看不到视图服务的资料了。
 
    启动zipkin改为: java -jar zipkin-server-2.10.1-exec.jar --zipkin.collector.rabbitmq.addresses=localhost
 
+### Hystrix 断路器
+试图服务器 依赖于 数据服务器，当 product-data-service 挂了，访问 http://127.0.0.1:8012/products 就会报错500。为解决这个问题，对试图服务器添加断路器。
+
+1. pom 加 spring-cloud-starter-netflix-hystrix
+2. 新增 ProductClientFeignHystrix implements ProductClientFeign
+3. 修改 ProductClientFeign 的注解 @FeignClient(value = "PRODUCT-DATA-SERVICE", fallback = ProductClientFeignHystrix.class)
+4. 配置文件application.yml 加 feign.hystrix.enabled: true
 ##### 启动步骤
 1. 首先挨个启动 EurekaServerApplication, ConfigServerApplication, ProductDataServiceApplication
 2. 然后启动两个视图微服务 ProductViewServiceFeignApplication，端口号分别是 8012, 8013.
@@ -219,3 +228,5 @@ management:
 5. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
 6. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
 ---
+
+[http://localhost:9411/zipkin/dependency/]: http://localhost:9411/zipkin/dependency/
