@@ -110,7 +110,7 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
       ```
    3. 配置文件都增加： spring.zipkin.base-url: http://localhost:9411
 
-### config-server 配置服务
+### 五 config-server 配置服务
 
 有时候，微服务要做集群，这就意味着，会有多个微服务实例。
 在业务上有时候需要修改一些配置信息，比如说 版本信息吧~ 
@@ -125,6 +125,16 @@ https://github.com/vihem/springcloud-ea/blob/master/respo/product-view-service-f
 https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties
 
 启动类加 @EnableConfigServer 这个注解表示本springboot 是个配置服务器。
+
+### 六 为 feign 配置配置服务端，用以显示 config-server 配置的git信息
+
+1. pom加spring-cloud-starter-config 用于访问配置服务器；
+2. 新增一个配置文件 bootstrap.yml \
+   作为配置客户端，比较特别~ 它需要在 bootstrap.yml 里配置 config-server 的信息，而不是像以前那样在 application.yml 里进行配置。\
+   bootstrap.yml 和 application.yml 的区别:
+   简单说就是前者先启动，并且一些系统方面的配置需要在 bootstrap.yml 里进行配置。\
+   在 bootstrap.yml 里配置提供了 serviceId: config-server, 这个是配置服务器在 eureka server 里的服务名称，这样就可以定位 config-server了。\
+   application.yml 把 eureka 地址信息移动到了 bootstrap.yml 里。（也可以不移）
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
 2. 启动ConfigServerApplication，访问 http://localhost:8030/version/dev
