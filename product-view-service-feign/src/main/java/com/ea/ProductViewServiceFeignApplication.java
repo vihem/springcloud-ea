@@ -25,6 +25,13 @@ import java.util.concurrent.TimeoutException;
 public class ProductViewServiceFeignApplication {
 
     public static void main(String[] args) {
+        // 判断 RabbitMQ 是否启动(根据端口判断)
+        int rabbitMQPort = 5672;
+        if (NetUtil.isUsableLocalPort(rabbitMQPort)){
+            System.err.printf("未在端口%d 发现 rabbitMQ服务，请检查rabbitMQ 是否启动", rabbitMQPort );
+            System.exit(1);
+        }
+
         int port = 0;
         int defaultPort = 8012;
         Future<Integer> future = ThreadUtil.execAsync(() ->{
@@ -57,6 +64,12 @@ public class ProductViewServiceFeignApplication {
         }
         new SpringApplicationBuilder(ProductViewServiceFeignApplication.class).properties("server.port=" + port).run(args);
     }
+
+    /**
+     * 用于 zipkin 服务链路
+     * Sampler 抽样策略： ALWAYS_SAMPLE 表示持续抽样
+     * @return
+     */
     @Bean
     public Sampler defaultSampler(){
         return Sampler.ALWAYS_SAMPLE;

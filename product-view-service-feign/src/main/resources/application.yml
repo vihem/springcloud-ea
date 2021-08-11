@@ -16,3 +16,13 @@ spring:
     mode: HTML5
     servlet:
       content-type: text/html
+
+# for accessing path: /actuator/bus-refresh
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        allowed-origins: "*"
+        allowed-methods: "*"

@@ -135,6 +135,75 @@ https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-fe
    简单说就是前者先启动，并且一些系统方面的配置需要在 bootstrap.yml 里进行配置。\
    在 bootstrap.yml 里配置提供了 serviceId: config-server, 这个是配置服务器在 eureka server 里的服务名称，这样就可以定位 config-server了。\
    application.yml 把 eureka 地址信息移动到了 bootstrap.yml 里。（也可以不移）
+
+3. 问题：
+现在修改 版本信息：
+https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties
+改成 version = vihem springcloud version 1.1,
+
+然后刷新 http://localhost:8012/products 会发现。。。。它还是 1.0.。。。 
+那么要如何生效呢？ 就必须重启 ConfigServerApplication 和 ProductViewServiceFeignApplication 才行。
+如何解决呢？这里用到消息总线，也就是消息队列 RabbitMQ。
+
+### 七 消息总线 RabbitMQ
+
+RabbitMQ 即一个消息队列，主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用。
+1. 客户端 feign 添加依赖
+   1. 多了spring-boot-starter-actuator 用于访问路径：/actuator/bus-refresh
+   2. 多了spring-cloud-starter-bus-amqp 用于支持 rabbitmq
+2. bootstrap.yml
+   
+```yaml
+spring:
+  cloud:
+    bus:
+      enabled: true
+      trace:
+        enabled: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+```
+3. application.yml
+
+```yaml
+# 新增路径访问允许：才能访问： /actuator/bus-refresh
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      cors:
+        allowed-origins: "*"
+        allowed-methods: "*"
+```
+4. 启动类新增 RabbitMQ 端口检测
+5. 新增一个类 utils/FreshConfigUtil.java
+
+使用 post 的方式访问 http://localhost:8012/actuator/bus-refresh 地址，
+之所以要专门做一个 FreshConfigUtil 类，就是为了可以使用 post 访问，因为它不支持 get 方式访问，直接把这个地址放在浏览器里，是会抛出 405错误的。\
+这个地址的作用就是让 config-server 去 git 获取最新的配置信息，并把此信息广播给集群里的两个 视图微服务。
+
+6. 视图服务进行了改造，支持了 rabbitMQ, 那么在默认情况下，它的信息就不会进入 Zipkin了。 在Zipkin 里看不到视图服务的资料了。
+
+   启动zipkin改为: java -jar zipkin-server-2.10.1-exec.jar --zipkin.collector.rabbitmq.addresses=localhost
+
+##### 启动步骤
+1. 首先挨个启动 EurekaServerApplication, ConfigServerApplication, ProductDataServiceApplication
+2. 然后启动两个视图微服务 ProductViewServiceFeignApplication，端口号分别是 8012, 8013.
+3. 此时访问\
+   http://127.0.0.1:8012/products \
+   http://127.0.0.1:8013/products \
+   可以看到git的原版本号
+4. 修改 git 里的版本号为新的数值
+5. 然后运行 FreshConfigUtil
+6. 再次访问\
+   http://127.0.0.1:8012/products \
+   http://127.0.0.1:8013/products \
+   可以看到 版本号是修改之后的值了
+
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
 2. 启动ConfigServerApplication，访问 http://localhost:8030/version/dev
