@@ -8,7 +8,7 @@ import cn.hutool.core.util.NetUtil;
 
 @SpringBootApplication
 @EnableHystrixDashboard //开启 断路器监控
-public class ProductServiceHystrixDashboardApplication {
+public class HystrixDashboardApplication {
     // http://localhost:8020/hystrix
     public static void main(String[] args) {
         int port = 8020;
@@ -16,6 +16,6 @@ public class ProductServiceHystrixDashboardApplication {
             System.err.printf("端口%d被占用了，无法启动%n", port );
             System.exit(1);
         }
-        new SpringApplicationBuilder(ProductServiceHystrixDashboardApplication.class).properties("server.port=" + port).run(args);
+        new SpringApplicationBuilder(HystrixDashboardApplication.class).properties("server.port=" + port).run(args);
     }
 }

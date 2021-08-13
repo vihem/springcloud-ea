@@ -226,6 +226,22 @@ management:
 4. 在最上面输入 http://localhost:8012/actuator/hystrix.stream 这个地址就是视图微服务的短路信息。
 5. 然后点击 Monitor Stream 就可以看到监控信息了。
 
+### 十 zuul 网关
+我们现在有两种微服务，分别是数据微服务和视图微服务。
+他们有可能放在不同的 ip 地址上，有可能是不同的端口。
+为了访问他们，就需要记录这些地址和端口。 而地址和端口都可能会变化，这就增加了访问者的负担。
+所以这个时候，我们就可以用网关来解决这个问题。
+如图所示，我们只需要记住网关的地址和端口号就行了。\
+如果要访问数据服务，访问地址 http://ip:port/api-data/products 即可。\
+如果要访问视图服务，访问地址 http://ip:port/api-view/products 即可。\
+
+1. 首先挨个运行 EurekaServerApplication, ConfigServerApplication, ProductDataServiceApplication， ProductViewServiceFeignApplication。
+2. 然后启动 ProductServiceZuulApplication
+3. 接着访问地址：
+http://localhost:8040/api-data/products \
+http://localhost:8040/api-view/products \
+这样就可以访问数据微服务和视微服务集群了，并且无需去记住那么多ip地址和端口号了。
+
 ---
 
 ### 启动：
@@ -242,4 +258,20 @@ management:
    http://127.0.0.1:8012/products
 5. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
 6. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
+---
+微服务：
+
+eureka-server: 8761
+product-data-service: 8001,8002,8003
+product-view-service-ribbon: 8010
+product-view-service-feign: 8012, 8013, 8014
+hystrix-dashboard: 8020
+turbine: 8021
+config-server: 8030
+zuul: 8040
+
+第三方：
+
+zipkin:9411
+rabbitMQ: 5672
 ---
