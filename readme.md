@@ -43,32 +43,29 @@ product-data-service 是 一个微服务。
     2. 使用前后端分离，是走的 http 协议， 那么就无法演示重要的 微服务端调用了，所以站长这里特意没有用前后端分离，以便于大家观察和掌握微服务的彼此调用
 
 ### 三 product-view-service-feign
-Feign 是对 Ribbon 的封装，使用注解的方式，调用起来更简单，也是主流的方式。
-
-pom需要添加 spring-cloud-starter-openfeign 依赖，用来支持 Feign 方式的
-
-client客户端，Ribbon和Feign的不同之处：
-
-Ribbon：
-```java
-@Component public class ProductClientRibbon {
-   @Autowired
-   private RestTemplate restTemplate;
-   public List<Product> listProduct(){
-      return restTemplate.getForObject("http://PRODUCT-DATA-SERVICE/products",List.class);
+1. Feign 是对 Ribbon 的封装，使用注解的方式，调用起来更简单，也是主流的方式。
+2. pom需要添加 spring-cloud-starter-openfeign 依赖，用来支持 Feign 方式的
+3. client客户端，Ribbon和Feign的不同之处：
+   
+   Ribbon：
+   ```java
+   @Component public class ProductClientRibbon {
+      @Autowired
+      private RestTemplate restTemplate;
+      public List<Product> listProduct(){
+         return restTemplate.getForObject("http://PRODUCT-DATA-SERVICE/products",List.class);
+      }
+   
    }
-
-}
-```
-Feign：
-
-```java
-@FeignClient(value = "PRODUCT-DATA-SERVICE")
-public interface ProductClientFeign {
-    @GetMapping("/products")
-    List<Product> listProduct();
-}
-```
+   ```
+   Feign：
+   ```java
+   @FeignClient(value = "PRODUCT-DATA-SERVICE")
+   public interface ProductClientFeign {
+       @GetMapping("/products")
+       List<Product> listProduct();
+   }
+   ```
 
 #### 实操
 1. ribbon 需要 配置一个类 ProductClientRibbon：
@@ -192,7 +189,7 @@ management:
 
    启动zipkin改为: java -jar zipkin-server-2.10.1-exec.jar --zipkin.collector.rabbitmq.addresses=localhost
 
-### Hystrix 断路器
+### 八 Hystrix 断路器
 试图服务器 依赖于 数据服务器，当 product-data-service 挂了，访问 http://127.0.0.1:8012/products 就会报错500。为解决这个问题，对试图服务器添加断路器。
 
 1. pom 加 spring-cloud-starter-netflix-hystrix
@@ -213,6 +210,24 @@ management:
    http://127.0.0.1:8013/products \
    可以看到 版本号是修改之后的值了
 
+### 九 hystrix-dashboard  Hystrix 断路器 监控
+当数据服务不可用的时候，断路器就会发挥作用；
+数据服务什么时候可用，什么时候不可用，如何监控这个事情呢？我们就要用到 断路器监控 来可视化掌控这个情况了
+
+重点：
+1. 对 试图服务器 ProductViewServiceFeignApplication 开启监控
+   @EnableCircuitBreaker   //使得它可以把信息共享给监控中心（用于 断路器监控）
+2. 测试类加一个 AccessViewService
+
+启动：
+1. 挨个运行 EurekaServerApplication, ConfigServerApplication, ProductDataServiceApplication， ProductViewServiceFeignApplication，ProductServiceHystrixDashboardApplication
+2. 运行视图微服务test里的 AccessViewService 来周期性地访问 http://127.0.0.1:8012/products。 因为只有访问了，监控里才能看到数据。
+3. 打开监控地址 http://localhost:8020/hystrix
+4. 在最上面输入 http://localhost:8012/actuator/hystrix.stream 这个地址就是视图微服务的短路信息。
+5. 然后点击 Monitor Stream 就可以看到监控信息了。
+
+---
+
 ### 启动：
 1. 先启动注册中心 EurekaServerApplication
 2. 启动ConfigServerApplication，访问 http://localhost:8030/version/dev
@@ -228,5 +243,3 @@ management:
 5. 执行一次 http://127.0.0.1:8012/products（启用Feign，不使用Ribbon）
 6. 访问链路追踪服务器 http://localhost:9411/zipkin/dependency/ 就可以看到 视图微服务调用数据微服务 的图形
 ---
-
-[http://localhost:9411/zipkin/dependency/]: http://localhost:9411/zipkin/dependency/

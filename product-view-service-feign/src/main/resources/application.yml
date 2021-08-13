@@ -17,7 +17,6 @@ spring:
     servlet:
       content-type: text/html
 
-# Ìí¼Ó Hystrix ¶ÏÂ·Æ÷
 feign.hystrix.enabled: true
 
 # for accessing path: /actuator/bus-refresh
