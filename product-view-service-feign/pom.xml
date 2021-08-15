@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ea</groupId>
-        <artifactId>springcloud-ea</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <artifactId>springcloud-finchley</artifactId>
+        <version>1.0.0</version>
     </parent>
     <artifactId>product-view-service-feign</artifactId>
     <name>product-view-service-feign</name>
