@@ -118,8 +118,8 @@ product-view-service-ribbon：该数据服务在 eureka 注册中心的名称。
 见图（repos/ConfigServer.png）
 我们先在 git 里保存 version 信息，然后通过 ConfigServer 去获取 version 信息，接着不同的视图微服务实例再去 ConfigServer 里获取 version.
 
-https://github.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties \
-https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties
+https://github.com/vihem/springcloud-finchley/blob/master/respo/product-view-service-feign-dev.properties \
+https://gitee.com/vihem/springcloud-finchley/blob/master/respo/product-view-service-feign-dev.properties
 
 启动类加 @EnableConfigServer 这个注解表示本springboot 是个配置服务器。
 
@@ -135,7 +135,7 @@ https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-fe
 
 3. 问题：
 现在修改 版本信息：
-https://gitee.com/vihem/springcloud-ea/blob/master/respo/product-view-service-feign-dev.properties
+https://gitee.com/vihem/springcloud-finchley/blob/master/respo/product-view-service-feign-dev.properties
 改成 version = vihem springcloud version 1.1,
 
 然后刷新 http://localhost:8012/products 会发现。。。。它还是 1.0.。。。 
