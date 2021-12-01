@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ea</groupId>
-    <artifactId>springcloud-finchley</artifactId>
+    <artifactId>springcloud-finchley-demo</artifactId>
     <version>1.0.0</version>
     <modules>
         <module>eureka-server</module>
@@ -16,7 +16,7 @@
         <module>hystrix-dashboard</module>
         <module>zuul</module>
     </modules>
-    <name>springcloud-finchley</name>
+    <name>springcloud-finchley-demo</name>
     <packaging>pom</packaging>
 
     <!--spring boot-->

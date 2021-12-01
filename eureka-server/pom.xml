@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.ea</groupId>
-        <artifactId>springcloud-finchley</artifactId>
+        <artifactId>springcloud-finchley-demo</artifactId>
         <version>1.0.0</version>
     </parent>
     <artifactId>eureka-server</artifactId>
